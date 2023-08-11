@@ -36,7 +36,18 @@ jwt:
   header: Authorization
   secret: and0LXRlc3QtYWxqamFiYWVnaS1qd3QtdGVzdC1hbGpqYWJhZWdpLWp3dC10ZXN0LWFsamphYmFlZ2ktand0LXRlc3QtYWxqamFiYWVnaS1qd3QtdGVzdC1hbGpqYWJhZWdpLWp3dC10ZXN0LWFsamphYmFlZ2ktand0LXRlc3QtYWxqamFiYWVnaS1qd3QtdGVzdC1hbGpqYWJhZWdp
   token-validity-in-seconds: 86400  
- 
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIA3WWO2PR2X2MXZ4IS
+      secret-key: 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
+    s3:
+      bucket: forecast-assets
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false     
+
 # 배포 환경
 --- 
 spring:
@@ -71,4 +82,14 @@ jwt:
   header: Authorization
   secret: and0LXRlc3QtYWxqamFiYWVnaS1qd3QtdGVzdC1hbGpqYWJhZWdpLWp3dC10ZXN0LWFsamphYmFlZ2ktand0LXRlc3QtYWxqamFiYWVnaS1qd3QtdGVzdC1hbGpqYWJhZWdpLWp3dC10ZXN0LWFsamphYmFlZ2ktand0LXRlc3QtYWxqamFiYWVnaS1qd3QtdGVzdC1hbGpqYWJhZWdp
   token-validity-in-seconds: 86400
-
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIA3WWO2PR2X2MXZ4IS
+      secret-key: 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
+    s3:
+      bucket: forecast-assets
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false   
