@@ -1,10 +1,10 @@
 package com.dev.ForecastApiTestJarV2.service;
 
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.web3j.abi.EventEncoder;
@@ -20,9 +20,8 @@ import org.web3j.protocol.core.methods.response.EthAccounts;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
-import com.dev.ForecastApiTestJarV2.contract.ContractWrapper;
+import com.dev.ForecastApiTestJarV2.contract.ContractWrapperV2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +32,18 @@ import lombok.extern.slf4j.Slf4j;
 public class Web3jService {
 
 	private final Web3j web3j;
-    private final ContractWrapper contractWrapper;
+    
+	@Value("${infura.API_URL}")
+    private String INFURA_API_URL;
 
-    @Value("${metamask.WALLET_ADDRESS}")
-    private String WALLET_ADDRESS;
+    @Value("${metamask.PRIVATE_KEY}")
+    private String PRIVATE_KEY;
 
     @Value("${metamask.CONTRACT_ADDRESS}")
     private String CONTRACT_ADDRESS;
+    
+    @Value("${metamask.WALLET_ADDRESS}")
+    private String WALLET_ADDRESS;
 
 
     // 현재 블록 번호
@@ -71,21 +75,21 @@ public class Web3jService {
     }
 
     // 스마트컨트랙트명 가져오기
-    public String getContractName() throws Exception {
+    public String getContractName(ContractWrapperV2 contractWrapper) throws Exception {
         return contractWrapper.name().send();
     }
 
     // nft 발행 건수
-    public BigInteger currentCount() throws Exception {
-        return contractWrapper.balanceOf(WALLET_ADDRESS).send();
-    }
-
-    // nft 발행
-    public TransactionReceipt nftCreate() throws Exception {
-        return contractWrapper.create(WALLET_ADDRESS, "ipfs://QmNZLXLk8nWG4PMdcCWAGpgW12hAhiV375YeFpaCLisfBi")
-                .sendAsync()
-                .get();
-    }
+//    public BigInteger currentCount() throws Exception {
+//        return contractWrapper.balanceOf(WALLET_ADDRESS).send();
+//    }
+//
+//    // nft 발행
+//    public TransactionReceipt nftCreate() throws Exception {
+//        return contractWrapper.create(WALLET_ADDRESS, "ipfs://QmNZLXLk8nWG4PMdcCWAGpgW12hAhiV375YeFpaCLisfBi")
+//                .sendAsync()
+//                .get();
+//    }
 
     // nft 거래가 발생할 경우 subscribe에 등록한 함수가 실행됨
     public void transferEventFlowable() throws Exception {
