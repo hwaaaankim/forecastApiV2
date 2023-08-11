@@ -1,13 +1,15 @@
 HELP.md
 target/
-!applicaion.yml
+!./src/main/resources/applicaion.yml
+!.applicaion.yml
+!.src/main/resources/application.yml
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
 ### STS ###
 .apt_generated
-.classpath
+.classpathad
 .factorypath
 .project
 .settingsgit 
