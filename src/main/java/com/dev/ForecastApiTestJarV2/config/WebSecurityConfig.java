@@ -29,7 +29,8 @@ public class WebSecurityConfig {
     private final AuthenticationEntryPoint entryPoint;
     private final String[] allowedUrls = {
     		"/api/member/signup", 
-    		"/api/member/signin"
+    		"/api/member/signin",
+    		"/image/**"
     		};
     private final String[] notAllowedUrls = {
     		"/api/member/test", 
