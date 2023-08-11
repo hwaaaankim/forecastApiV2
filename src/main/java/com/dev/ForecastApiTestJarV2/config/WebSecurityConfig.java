@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     private final String[] allowedUrls = {
     		"/api/member/signup", 
     		"/api/member/signin",
-    		"/image/**"
+    		"/test/**"
     		};
     private final String[] notAllowedUrls = {
     		"/api/member/test", 
