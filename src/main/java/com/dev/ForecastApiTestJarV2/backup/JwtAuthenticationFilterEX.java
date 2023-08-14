@@ -1,4 +1,7 @@
-package com.dev.ForecastApiTestJarV2.filter;
+package com.dev.ForecastApiTestJarV2.backup;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -7,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,12 +20,14 @@ import com.dev.ForecastApiTestJarV2.constant.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+@Component
+public class JwtAuthenticationFilterEX extends OncePerRequestFilter {
 
 	// GenericFilterBean 에서 변경
 	private final JwtTokenProvider tokenProvider;
@@ -68,14 +74,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, java.io.IOException {
-		System.out.println("doFilterInternal");
+
 		String token = resolveToken(request);
+		Map<String, Object> result = new HashMap<>();
         try {
             if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
                 Authentication authentication = tokenProvider.getAuthentication(token);
                 System.out.println(authentication);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+       
+        } catch(SignatureException e) {
+        	request.setAttribute("exception", ApiErrorResponse.WRONG_TYPE_TOKEN);
         } catch (SecurityException | MalformedJwtException e) {
             request.setAttribute("exception", ApiErrorResponse.WRONG_TYPE_TOKEN);
         } catch (ExpiredJwtException e) {

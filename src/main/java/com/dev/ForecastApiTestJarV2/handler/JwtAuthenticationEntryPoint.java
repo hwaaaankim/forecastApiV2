@@ -18,7 +18,8 @@ import io.jsonwebtoken.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     
 	private final HandlerExceptionResolver resolver;
- 
+	
+	
     public JwtAuthenticationEntryPoint(
     		@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
     		) {
@@ -31,24 +32,23 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     		HttpServletResponse response, 
     		AuthenticationException authException
     		) throws java.io.IOException {
-    	String exception = (String)request.getAttribute("exception");
-    	System.out.println("commence");
-        if(exception == null) {
+    	int exception = (int)request.getAttribute("exception");
+        if(exception == 200) {
             setResponse(response, ApiErrorResponse.UNKNOWN_ERROR.getMessage());
         }
         //잘못된 타입의 토큰인 경우
-        else if(exception.equals(ApiErrorResponse.WRONG_TYPE_TOKEN)) {
+        else if(exception == ApiErrorResponse.WRONG_TYPE_TOKEN.getCode()) {
             setResponse(response, ApiErrorResponse.WRONG_TYPE_TOKEN.getMessage());
         }
         //토큰 만료된 경우
-        else if(exception.equals(ApiErrorResponse.EXPIRED_TOKEN)) {
+        else if(exception == ApiErrorResponse.EXPIRED_TOKEN.getCode()) {
             setResponse(response, ApiErrorResponse.EXPIRED_TOKEN.getMessage());
         }
         //지원되지 않는 토큰인 경우
-        else if(exception.equals(ApiErrorResponse.UNSUPPORTED_TOKEN)) {
+        else if(exception == ApiErrorResponse.UNSUPPORTED_TOKEN.getCode()) {
             setResponse(response, ApiErrorResponse.UNSUPPORTED_TOKEN.getMessage());
         }
-        else if(exception.equals(ApiErrorResponse.NULL_ERROR)){
+        else if(exception == ApiErrorResponse.NULL_ERROR.getCode()){
         	setResponse(response, ApiErrorResponse.NULL_ERROR.getMessage());
         }
         else {

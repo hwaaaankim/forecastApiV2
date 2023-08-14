@@ -28,11 +28,10 @@ public class MemberController {
 
     @PostMapping("/signin")
     public ResponseEntity<Object> login(@RequestBody MemberLoginRequestDTO memberLoginRequestDTO) {
-    	System.out.println("signin");
-        String username = memberLoginRequestDTO.getUsername();
-        String password = memberLoginRequestDTO.getPassword();
+        String walletAddress = memberLoginRequestDTO.getWalletAddress();
+        String walletId = memberLoginRequestDTO.getWalletId();
        
-        return memberService.login(username, password);
+        return memberService.login(walletAddress, walletId);
         
 //        return new ResponseEntity<Object>(tokenInfo, HttpStatus.valueOf(200));
     }
@@ -46,11 +45,10 @@ public class MemberController {
     }
     
     @GetMapping("/test")
-    public ResponseEntity<Member> test(
-    		@RequestBody MemberLoginRequestDTO memberLoginRequestDTO) {
+    public String test() {
         
-    	
-        return ResponseEntity.ok(memberService.signup(memberLoginRequestDTO));
+    	System.out.println("hi");
+        return "success";
     }
 }
 

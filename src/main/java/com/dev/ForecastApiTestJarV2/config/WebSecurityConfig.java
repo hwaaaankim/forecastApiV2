@@ -8,12 +8,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.dev.ForecastApiTestJarV2.constant.JwtTokenProvider;
-import com.dev.ForecastApiTestJarV2.filter.JwtAuthenticationFilter;
+import com.dev.ForecastApiTestJarV2.filter.JwtExceptionFilter;
+import com.dev.ForecastApiTestJarV2.filter.JwtFilter;
+import com.dev.ForecastApiTestJarV2.handler.JwtAuthenticationEntryPoint;
 import com.dev.ForecastApiTestJarV2.service.member.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class WebSecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
     private final CorsConfig corsConfig;
-    private final AuthenticationEntryPoint entryPoint;
+    private final JwtAuthenticationEntryPoint entryPoint;
     private final String[] allowedUrls = {
     		"/api/member/signup", 
     		"/api/member/signin",
@@ -40,6 +41,10 @@ public class WebSecurityConfig {
         http
                 .httpBasic().disable()
                 .csrf().disable()
+                .authenticationProvider(daoAuthenticationProvider())
+                .exceptionHandling()
+                .authenticationEntryPoint(entryPoint)
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
@@ -48,8 +53,12 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(corsConfig.corsFilter())
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
+                .addFilterBefore(
+                        new JwtFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class
+                ).addFilterBefore(new JwtExceptionFilter(jwtTokenProvider), JwtFilter.class);
+                
+                
         return http.build();
     }
 

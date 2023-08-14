@@ -5,8 +5,9 @@ import lombok.Data;
 @Data
 public class MemberLoginRequestDTO {
 
-	private String username;
-	private String password;
-	private String nickname;
-	private String roles;
+	private String walletAddress;
+	private String walletId;
+	private Long tokenBalance;
+	private Long pointBalance;
+	private String email;
 }

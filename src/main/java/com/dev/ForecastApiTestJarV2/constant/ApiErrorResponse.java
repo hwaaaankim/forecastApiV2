@@ -18,7 +18,10 @@ public enum ApiErrorResponse {
 	USERNAME_ERROR(1009, "잘못된 USERNAME 입니다."),
 	PASSWORD_ERROR(1010, "잘못된 PASSWORD 입니다."),
 	EXPIRED_ERROR(1011, "계정이 접속 불가능한 상태 입니다."),
-	NULL_ERROR(1012, "필요한 정보를 모두 입력 해 주세요.");
+	NULL_ERROR(1012, "필요한 정보를 모두 입력 해 주세요."),
+	NOT_SUPPORTED(1013, "정확한 Http Method를 이용 해 주세요."),
+	REQUEST_EXCEPTION(1014, "정확한 Request Type을 이용 해 주세요."),
+	ALREADY_USER(1015, "이미 가입한 wallet address 입니다.");
 	
 	private final int code;
 	private final String message;

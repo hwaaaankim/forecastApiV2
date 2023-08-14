@@ -97,7 +97,7 @@ public class JwtTokenProvider implements InitializingBean {
 	}
 
 	// 토큰 정보를 검증하는 메서드
-	public boolean validateToken(String token) {
+	public boolean validateToken(String token) throws io.jsonwebtoken.security.SignatureException {
 		System.out.println("validateToken");
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

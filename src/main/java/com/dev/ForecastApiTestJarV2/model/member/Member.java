@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity 
-@Table(name = "TB_ADMINISTRATION")
+@Table(name = "TB_MEMBER")
 @Getter
 @Setter
 @Builder
@@ -40,46 +40,52 @@ public class Member implements UserDetails {
 
 	@JsonIgnore
     @Id 
-    @Column(name = "ADMINISTRATION_ID")
+    @Column(name = "MEMBER_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long memberId;
 
-    @Column(name = "ADMINISTRATION_USERNAME", length = 50, unique = true)
-    private String username;
-
-    @JsonIgnore
-    @Column(name = "ADMINISTRATION_PASSWORD", length = 100)
-    private String password;
+    @Column(name = "MEMBER_WALLET_ADDRESS", length = 50, unique = true)
+    private String memberWalletAddress;
+    
+    @Column(name = "MEMBER_WALLET_ID", length = 50, unique = true)
+    private String memberWalletId;
+    
+//    @JsonIgnore
+//    @Column(name = "MEMBER_PASSWORD", length = 100)
+//    private String memberPassword;
   
-    @Column(name="ADMINISTRATION_DATE")
-    private Date administrationDate;
+    @Column(name="MEMBER_JOIN_DATE")
+    private Date memberJoinDate;
+    
+    @Column(name="MEMBER_EMAIL", unique = true)
+    private String memberEmail;
 
-    @Column(name = "ADMINISTRATION_NICKNAME", length = 50)
-    private String nickname;
+    @Column(name = "MEMBER_NICKNAME", length = 50)
+    private String memberNickname;
 
     @JsonIgnore
-    @Column(name = "ADMINISTRATION_ACTIVATED")
-    private boolean activated;
+    @Column(name = "MEMBER_ACTIVATED")
+    private boolean memberActivated;
 
-    @Column(name="ADMINISTRATION_ROLE", length = 50)
-	private String roles;
+    @Column(name="MEMBER_ROLE", length = 50)
+	private String memberRole;
     
     @Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		ArrayList<GrantedAuthority> auth = new ArrayList<GrantedAuthority>();
-        auth.add(new SimpleGrantedAuthority(roles));
+        auth.add(new SimpleGrantedAuthority(memberRole));
         return auth;
 	}
 
     @Override
     public String getUsername() {
-        return username;
+        return memberWalletAddress;
     }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+//    @Override
+//    public String getPassword() {
+//        return memberPassword;
+//    }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
@@ -103,5 +109,11 @@ public class Member implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	@Override
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

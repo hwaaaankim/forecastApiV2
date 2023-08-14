@@ -6,8 +6,10 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,20 +17,19 @@ import com.dev.ForecastApiTestJarV2.constant.ApiErrorResponse;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 
 @RestControllerAdvice
 public class ExceptionResponseHandler {
 
 	Map<String, Object> result = new HashMap<>();
 	
-	@ExceptionHandler(SignatureException.class)
-    public ResponseEntity<Object> handleSignatureException() {
-		
-		result.put("status", ApiErrorResponse.UNSUPPORTED_TOKEN.getCode());
-	    result.put("message", ApiErrorResponse.UNSUPPORTED_TOKEN.getMessage());
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
-    }
+//	@ExceptionHandler(SignatureException.class)
+//    public ResponseEntity<Object> handleSignatureException() {
+//		
+//		result.put("status", ApiErrorResponse.UNSUPPORTED_TOKEN.getCode());
+//	    result.put("message", ApiErrorResponse.UNSUPPORTED_TOKEN.getMessage());
+//		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+//    }
  
     @ExceptionHandler(MalformedJwtException.class)
     public ResponseEntity<Object> handleMalformedJwtException() {
@@ -76,5 +77,19 @@ public class ExceptionResponseHandler {
 	  	result.put("status", ApiErrorResponse.PASSWORD_ERROR.getCode());
 	    result.put("message", ApiErrorResponse.PASSWORD_ERROR.getMessage());
     	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+    }
+    
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Object> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    	result.put("status", ApiErrorResponse.NOT_SUPPORTED.getCode());
+	    result.put("message", ApiErrorResponse.NOT_SUPPORTED.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+    }
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    	result.put("status", ApiErrorResponse.REQUEST_EXCEPTION.getCode());
+	    result.put("message", ApiErrorResponse.REQUEST_EXCEPTION.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
     }
 }

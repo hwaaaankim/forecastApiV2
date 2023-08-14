@@ -10,6 +10,5 @@ import com.dev.ForecastApiTestJarV2.model.member.Member;
 @Repository
 public interface MemberRepository extends JpaRepository<Member ,Long>{
 
-	Optional<Member> findByUsername(String username);
-	Optional<Member> findOneByUsername(String username);
+	Optional<Member> findOneByMemberWalletAddress(String walletAddress);
 }
