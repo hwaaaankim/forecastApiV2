@@ -3,18 +3,23 @@ package com.dev.ForecastApiTestJarV2.model.member;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.dev.ForecastApiTestJarV2.model.quest.QuestManageLog;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -69,6 +74,46 @@ public class Member implements UserDetails {
 
     @Column(name="MEMBER_ROLE", length = 50)
 	private String memberRole;
+    
+    @OneToMany(
+			fetch = FetchType.LAZY, 
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			mappedBy = "accessLogMemberId"
+			)
+	private List<MemberAccessLog> memberAccessLogs;
+	
+	@OneToMany(
+			fetch = FetchType.LAZY, 
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			mappedBy = "transferingLogMemberId"
+			)
+	private List<MemberTransferingLog> memberTransferingLogs;
+	
+	@OneToMany(
+			fetch = FetchType.LAZY, 
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			mappedBy = "votingLogMemberId"
+			)
+	private List<MemberVotingLog> memberVotingLogs;
+	
+	@OneToMany(
+			fetch = FetchType.LAZY, 
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			mappedBy = "actionLogMemberId"
+			)
+	private List<MemberActionLog> memberActionLogs;
+	
+	@OneToMany(
+			fetch = FetchType.LAZY, 
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			mappedBy = "manageLogMemberId"
+			)
+	private List<QuestManageLog> questManageLog;
     
     @Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

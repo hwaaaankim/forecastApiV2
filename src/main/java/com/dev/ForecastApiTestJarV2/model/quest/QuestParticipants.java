@@ -19,8 +19,6 @@ public class QuestParticipants {
 	@Column(name="QUEST_PARTICIPANTS_ID")
 	private Long questParticipantsId;
 	
-	
-	
 }
 
 
