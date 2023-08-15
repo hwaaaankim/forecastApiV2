@@ -4,6 +4,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -11,7 +12,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.dev.ForecastApiTestJarV2.constant.ApiErrorResponse;
 
@@ -62,6 +65,34 @@ public class ExceptionResponseHandler {
 	    result.put("message", ApiErrorResponse.UNKNOWN_ERROR.getMessage());
     	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
     }
+    
+    @ExceptionHandler(NoHandlerFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<Object> handle404(){
+	
+    	result.put("status", ApiErrorResponse.NOTFOUND_ERROR.getCode());
+	    result.put("message", ApiErrorResponse.NOTFOUND_ERROR.getMessage());
+    	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+	}
+    
+    // 데이터베이스오류
+	@ExceptionHandler(DataAccessException.class)
+	public ResponseEntity<Object> handleDataAccessException() {
+		
+		result.put("status", ApiErrorResponse.DATABASE_ERROR.getCode());
+	    result.put("message", ApiErrorResponse.DATABASE_ERROR.getMessage());
+    	
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+	}
+	
+	// 500에러처리
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<Object> handleException() {
+		
+		result.put("status", ApiErrorResponse.SERVER_ERROR.getCode());
+	    result.put("message", ApiErrorResponse.SERVER_ERROR.getMessage());
+    	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+	}
     
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Object> handlerSQLIntegrityConstraintViolationException(){

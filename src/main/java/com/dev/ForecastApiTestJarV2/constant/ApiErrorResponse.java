@@ -21,7 +21,10 @@ public enum ApiErrorResponse {
 	NULL_ERROR(1012, "필요한 정보를 모두 입력 해 주세요."),
 	NOT_SUPPORTED(1013, "정확한 Http Method를 이용 해 주세요."),
 	REQUEST_EXCEPTION(1014, "정확한 Request Type을 이용 해 주세요."),
-	ALREADY_USER(1015, "이미 가입한 wallet address 입니다.");
+	ALREADY_USER(1015, "이미 가입한 wallet address 입니다."),
+	NOTFOUND_ERROR(1016, "존재하지 않는 request url 입니다."),
+	DATABASE_ERROR(1017, "database error 발생."),
+	SERVER_ERROR(1018, "server error 발생.");
 	
 	private final int code;
 	private final String message;
