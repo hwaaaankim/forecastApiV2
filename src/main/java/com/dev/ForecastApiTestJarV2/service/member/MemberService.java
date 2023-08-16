@@ -48,7 +48,7 @@ public class MemberService {
 			MemberLoginRequestDTO memberLoginRequestDTO,
 			HttpServletRequest request
 			) {
-//		System.out.println("login");
+		System.out.println("login");
 		MemberAccessLog accessLog = new MemberAccessLog();
 		if (memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).orElse(null) != null) {
 			UsernamePasswordAuthenticationToken authenticationToken = 
@@ -109,6 +109,7 @@ public class MemberService {
                 .memberNickname(memberLoginRequestDTO.getEmail())
 				.memberActivated(true)
 				.memberSign(true).build();
+		System.out.println(member);
 		memberRepository.save(member);
 		
 		UsernamePasswordAuthenticationToken authenticationToken = 
@@ -124,6 +125,7 @@ public class MemberService {
 		accessLog.setAccessLogMemberId(memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().getMemberId());
 		accessLog.setAccessLogText("NEW USER");
 		memberAccessLogService.saveAccessLog(accessLog);
+		System.out.println(accessLog);
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
@@ -135,6 +137,7 @@ public class MemberService {
 //		redis.setWalletAddress((String)authentication.getPrincipal());
 //		redisRepository.save(redis);
 		redisTemplate.opsForValue().set(authentication.getName(), jwt.getAccessToken());
+		System.out.println(redisTemplate.opsForValue().get(authentication.getName()));
 		return new ResponseEntity<Object>(jwt, HttpStatus.valueOf(200));
 	}
 	
