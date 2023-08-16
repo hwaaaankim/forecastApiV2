@@ -109,7 +109,7 @@ public class MemberService {
                 .memberNickname(memberLoginRequestDTO.getEmail())
 				.memberActivated(true)
 				.memberSign(true).build();
-		System.out.println(member);
+		System.out.println(member.toString());
 		memberRepository.save(member);
 		
 		UsernamePasswordAuthenticationToken authenticationToken = 
@@ -125,7 +125,7 @@ public class MemberService {
 		accessLog.setAccessLogMemberId(memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().getMemberId());
 		accessLog.setAccessLogText("NEW USER");
 		memberAccessLogService.saveAccessLog(accessLog);
-		System.out.println(accessLog);
+		System.out.println(accessLog.toString());
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
