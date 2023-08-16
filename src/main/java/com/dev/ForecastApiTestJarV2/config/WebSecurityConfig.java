@@ -2,6 +2,7 @@ package com.dev.ForecastApiTestJarV2.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,10 +29,11 @@ public class WebSecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final CorsConfig corsConfig;
     private final JwtAuthenticationEntryPoint entryPoint;
+    private final RedisTemplate<String, String> redisTemplate;
     private final String[] allowedUrls = {
     		"/api/member/signup", 
     		"/api/member/signin",
-    		"/test/**"
+    		"/api/member/register"
     		};
     private final String[] notAllowedUrls = {
     		"/api/member/test", 
@@ -54,9 +56,9 @@ public class WebSecurityConfig {
                 .and()
                 .addFilter(corsConfig.corsFilter())
                 .addFilterBefore(
-                        new JwtFilter(jwtTokenProvider),
+                        new JwtFilter(jwtTokenProvider, redisTemplate),
                         UsernamePasswordAuthenticationFilter.class
-                ).addFilterBefore(new JwtExceptionFilter(jwtTokenProvider), JwtFilter.class);
+                ).addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
                 
                 
         return http.build();

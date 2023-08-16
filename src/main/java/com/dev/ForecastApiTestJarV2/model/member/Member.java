@@ -55,10 +55,6 @@ public class Member implements UserDetails {
     @Column(name = "MEMBER_WALLET_ID", length = 50, unique = true)
     private String memberWalletId;
     
-//    @JsonIgnore
-//    @Column(name = "MEMBER_PASSWORD", length = 100)
-//    private String memberPassword;
-  
     @Column(name="MEMBER_JOIN_DATE")
     private Date memberJoinDate;
     
@@ -74,6 +70,11 @@ public class Member implements UserDetails {
 
     @Column(name="MEMBER_ROLE", length = 50)
 	private String memberRole;
+    
+    // Default value is false
+    // about Dao or not
+    @Column(name="MEMBER_SIGN")
+    private boolean memberSign;
     
     @OneToMany(
 			fetch = FetchType.LAZY, 

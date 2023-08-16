@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.dev.ForecastApiTestJarV2.constant.ApiErrorResponse;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -34,6 +36,15 @@ public class ExceptionResponseHandler {
 //		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
 //    }
  
+	
+	@ExceptionHandler(ValueInstantiationException.class)
+    public ResponseEntity<Object> handleValueInstantiationException() {
+    	
+    	result.put("status", ApiErrorResponse.NULL_ERROR.getCode());
+	    result.put("message", ApiErrorResponse.NULL_ERROR.getMessage());
+    	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+    }
+	
     @ExceptionHandler(MalformedJwtException.class)
     public ResponseEntity<Object> handleMalformedJwtException() {
     	
@@ -60,7 +71,7 @@ public class ExceptionResponseHandler {
     
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handlerIllegalArgumentException(){
-    	
+
     	result.put("status", ApiErrorResponse.UNKNOWN_ERROR.getCode());
 	    result.put("message", ApiErrorResponse.UNKNOWN_ERROR.getMessage());
     	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
@@ -93,7 +104,15 @@ public class ExceptionResponseHandler {
 	    result.put("message", ApiErrorResponse.SERVER_ERROR.getMessage());
     	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
 	}
-    
+	
+	@ExceptionHandler(InternalAuthenticationServiceException.class)
+	public ResponseEntity<Object> handleInternalAuthenticationServiceException() {
+		
+		result.put("status", ApiErrorResponse.ALREADY_USER.getCode());
+	    result.put("message", ApiErrorResponse.ALREADY_USER.getMessage());
+    	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+	}
+	
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Object> handlerSQLIntegrityConstraintViolationException(){
     	
@@ -119,8 +138,8 @@ public class ExceptionResponseHandler {
     
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-    	result.put("status", ApiErrorResponse.REQUEST_EXCEPTION.getCode());
-	    result.put("message", ApiErrorResponse.REQUEST_EXCEPTION.getMessage());
+    	result.put("status", ApiErrorResponse.NULL_ERROR.getCode());
+	    result.put("message", ApiErrorResponse.NULL_ERROR.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
     }
 }

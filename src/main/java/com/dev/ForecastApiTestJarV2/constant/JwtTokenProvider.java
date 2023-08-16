@@ -58,13 +58,16 @@ public class JwtTokenProvider implements InitializingBean {
 	}
 
 	// 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
-	public TokenInfo generateToken(Authentication authentication) {
-		System.out.println("generateToken");
+	public TokenInfo generateToken(
+			Authentication authentication,
+			String status
+			) {
 		// 권한 가져오기
 		String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.joining(","));
 
 		long now = (new Date()).getTime();
+		
 		// Access Token 생성
 		Date accessTokenExpiresIn = new Date(now + this.tokenValidityInMilliseconds);
 		String accessToken = Jwts.builder().setSubject(authentication.getName()).claim("auth", authorities)
@@ -74,12 +77,15 @@ public class JwtTokenProvider implements InitializingBean {
 		String refreshToken = Jwts.builder().setExpiration(new Date(now + this.tokenValidityInMilliseconds))
 				.signWith(key, SignatureAlgorithm.HS256).compact();
 
-		return TokenInfo.builder().grantType("Bearer").accessToken(accessToken).refreshToken(refreshToken).build();
+		return TokenInfo.builder()
+				.grantType("Bearer")
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.status(status).build();
 	}
 
 	// JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
 	public Authentication getAuthentication(String accessToken) {
-		System.out.println("getAuthentication");
 		// 토큰 복호화
 		Claims claims = parseClaims(accessToken);
 

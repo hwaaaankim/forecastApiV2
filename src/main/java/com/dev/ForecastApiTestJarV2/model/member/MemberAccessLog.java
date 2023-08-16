@@ -35,8 +35,11 @@ public class MemberAccessLog {
 	@Column(name="ACCESS_LOG_IP")
 	private String accessLogIp;
 	
-	@Column(name="ACCESS_LOG_JWT")
-	private String accessLogJwt;
+	@Column(name="ACCESS_LOG_ACCESS_JWT")
+	private String accessLogAccessJwt;
+	
+	@Column(name="ACCESS_LOG_REFRESH_JWT")
+	private String accessLogRefreshJwt;
 	
 	@Column(name="ACCESS_LOG_MEMBER_ID")
 	private Long accessLogMemberId;
