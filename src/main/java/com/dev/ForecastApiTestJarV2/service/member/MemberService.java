@@ -98,6 +98,7 @@ public class MemberService {
 			MemberLoginRequestDTO memberLoginRequestDTO,
 			HttpServletRequest request
 			) {
+		System.out.println("register");
 		MemberAccessLog accessLog = new MemberAccessLog();
 		Member member = Member.builder()
 				.memberWalletAddress(memberLoginRequestDTO.getWalletAddress())
@@ -106,7 +107,8 @@ public class MemberService {
                 .memberJoinDate(new Date())
                 .memberEmail(memberLoginRequestDTO.getEmail())
                 .memberNickname(memberLoginRequestDTO.getEmail())
-				.memberActivated(true).build();
+				.memberActivated(true)
+				.memberSign(true).build();
 		memberRepository.save(member);
 		
 		UsernamePasswordAuthenticationToken authenticationToken = 

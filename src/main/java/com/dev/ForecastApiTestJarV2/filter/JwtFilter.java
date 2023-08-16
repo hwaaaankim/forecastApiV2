@@ -45,14 +45,13 @@ public class JwtFilter extends GenericFilterBean {
 			
 			String key = tokenProvider.getAuthentication(jwt).getName();
 			
-//			System.out.println("doFilter if" + key);
 			try {
 				String storedToken = redisTemplate.opsForValue().get(key);
-//		            **로그인 여부 체크**
-	            if(redisTemplate.hasKey(key) && storedToken != null) {
-//	            	System.out.println("doFilter if");
+
+				if(redisTemplate.hasKey(key) && storedToken != null) {
 	            	Authentication authentication = tokenProvider.getAuthentication(jwt);
 	                SecurityContextHolder.getContext().setAuthentication(authentication);
+	                System.out.println("doFilter if try if");
 	                servletRequest.setAttribute("logoutUser", 0);
 	                servletRequest.setAttribute("exception", 200);
 	                log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
@@ -68,9 +67,10 @@ public class JwtFilter extends GenericFilterBean {
 			servletRequest.setAttribute("nullTokenSign", 1);
 		} else {
 			log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+			System.out.println("doFilter if else");
 			servletRequest.setAttribute("logoutUser", 0);
 			servletRequest.setAttribute("nullTokenSign", 0);
-			throw new MalformedJwtException("유효한 JWT 토큰이 없습니다");
+//			throw new MalformedJwtException("유효한 JWT 토큰이 없습니다");
 		}
 		
 		filterChain.doFilter(servletRequest, servletResponse);
