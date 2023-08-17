@@ -63,7 +63,7 @@ public class TestController {
 		Date today = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		String now = format.format(today);
-		s3UploadService.upload(file, "imageUpload/" + now);
+//		s3UploadService.upload(file, "imageUpload/" + now);
 
 		return "success";
 	}

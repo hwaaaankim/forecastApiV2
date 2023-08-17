@@ -10,8 +10,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.springframework.lang.Nullable;
 
 import com.dev.ForecastApiTestJarV2.model.member.MemberActionLog;
 import com.dev.ForecastApiTestJarV2.model.member.MemberVotingLog;
@@ -32,7 +36,8 @@ public class Quest {
 	private String questTitle;
 	
 	@Column(name="QUEST_POINT")
-	private int questPoint;
+	@Nullable
+	private Long questPoint;
 	
 	@Column(name="QUEST_SUBJECT")
 	private String questSubject;
@@ -68,15 +73,42 @@ public class Quest {
 	private String questImagePath;
 	
 	@Column(name="QUEST_ACTION_TOKEN_AMOUNT")
+	@Nullable
 	private Long questActionTokenAmount;
 	
 	@Column(name="QUEST_VOTING_TOKEN_AMOUNT")
+	@Nullable
 	private Long questVotingTokenAmount;
 	
 	// Quest Action 을 통해 결정된 게시 여부
 	// true 인 Quest 만 게시 가능
 	@Column(name="QUEST_SIGN")
 	private Boolean questSign;
+	
+	// DAO - FAIL or SUCCESS - END
+	@Column(name="QUEST_STATUS")
+	private String questStatus;
+	
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = false)
+	@JoinColumn(
+			name="QUEST_HASHTAG_REFER_ID", referencedColumnName="HASHTAG_ID"
+			)
+	private QuestHashTag questHashTag;
+	
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+	@JoinColumn(
+			name="QUEST_ANSWER_REFER_ID", referencedColumnName="ANSWER_ID"
+			)
+	@Nullable
+	private QuestAnswer questAnswer;
+	
+	@OneToMany(
+			fetch = FetchType.LAZY, 
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			mappedBy = "answerQuestId"
+			)
+	private List<QuestAnswer> questAnswers;
 	
 	@OneToMany(
 			fetch = FetchType.LAZY, 
@@ -93,14 +125,6 @@ public class Quest {
 			mappedBy = "votingLogQuestId"
 			)
 	private List<MemberVotingLog> memberVotingLogs;
-	
-	@OneToMany(
-			fetch = FetchType.LAZY, 
-			cascade = CascadeType.ALL,
-			orphanRemoval = true,
-			mappedBy = "hashtagQuestId"
-			)
-	private List<QuestHashTag> questHashtags;
 	
 	@OneToMany(
 			fetch = FetchType.LAZY, 

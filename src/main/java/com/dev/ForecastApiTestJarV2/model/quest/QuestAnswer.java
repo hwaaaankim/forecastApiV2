@@ -7,21 +7,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name="TB_QUEST_HASHTAG")
-public class QuestHashTag {
+@Table(name="TB_QUEST_ANSWER")
+public class QuestAnswer {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="HASHTAG_ID")
-	private Long hashtagId;
+	@Column(name="ANSWER_ID")
+	private Long answerId;
 	
-	@Column(name="HASHTAG_NAME")
-	private String hashtagName;
+	@Column(name="ANSWER_VALUE")
+	private String answerValue;
 	
+	@Column(name="ANSWER_QUEST_ID")
+	private Long answerQuestId;
 }
