@@ -22,6 +22,19 @@ public class QuestService {
 	@Autowired
 	private QuestRepository questRepository;
 	
+	
+	public void questVoting(HashMap<String, Object> result, String walletAddress) {
+		int id = (int) result.get("ID");
+		Long questId = Long.valueOf(id);
+		int amount =  (int) result.get("AMOUNT");
+		Long tokenAmount = Long.valueOf(amount);
+		
+		questRepository.findById(questId).ifPresent(q->{
+			q.setQuestActionTokenAmount(q.getQuestVotingTokenAmount() + tokenAmount);
+			questRepository.save(q);
+		});
+	}
+	
 	public void questAction(HashMap<String, Object> result, String walletAddress) {
 		
 		int id = (int) result.get("ID");

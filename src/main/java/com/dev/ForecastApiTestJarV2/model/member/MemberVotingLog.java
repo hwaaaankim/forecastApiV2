@@ -2,12 +2,19 @@ package com.dev.ForecastApiTestJarV2.model.member;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.dev.ForecastApiTestJarV2.model.quest.QuestAnswer;
+import com.dev.ForecastApiTestJarV2.model.quest.QuestHashTag;
 
 import lombok.Data;
 
@@ -35,10 +42,11 @@ public class MemberVotingLog {
 	@Column(name="VOTING_LOG_TOKEN_AMOUNT")
 	private Long votingLogTokenAmount;
 	
-	// true 인 경우 찬성
-	// false 인 경우 반대
-	@Column(name="VOTING_LOG_SIGN")
-	private Boolean votingLogSign;
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = false)
+	@JoinColumn(
+			name="VOTING_LOG_REFER_ID", referencedColumnName="ANSWER_ID"
+			)
+	private QuestAnswer votingLogAnswer;
 }
 
 
