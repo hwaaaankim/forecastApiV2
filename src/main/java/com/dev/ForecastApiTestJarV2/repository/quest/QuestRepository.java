@@ -18,7 +18,7 @@ public interface QuestRepository extends JpaRepository<Quest, Long>{
 	Page<Quest> findAllByQuestHashTag(Pageable pagealbe, QuestHashTag tag);
 	Page<Quest> findAllByQuestStatusOrderByQuestActionEndDesc(Pageable pagealbe, String status);
 	Page<Quest> findAllByQuestStatusOrderByQuestEndDateDesc(Pageable pagealbe, String status);
-	Page<Quest> findAllByQuestStatusOrderByQuestPointDesc(Pageable pagealbe, String status);
+	Page<Quest> findAllByQuestStatusOrderByQuestVotingTokenAmountDesc(Pageable pagealbe, String status);
 	
 	Page<Quest> findAllByQuestUploadDateLessThan(Pageable pageable,Date date);
 	Page<Quest> findAllByQuestUploadDateGreaterThan(Pageable pageable,Date date);

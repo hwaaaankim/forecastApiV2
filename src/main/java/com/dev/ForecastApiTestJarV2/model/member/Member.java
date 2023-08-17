@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,6 +37,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class Member implements UserDetails {
 
     /**
@@ -74,6 +76,7 @@ public class Member implements UserDetails {
     // Default value is false
     // about Dao or not
     @Column(name="MEMBER_SIGN")
+    @Getter
     private boolean memberSign;
     
     @OneToMany(

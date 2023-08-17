@@ -47,6 +47,7 @@ public class MemberController {
     
     @RequestMapping("/logout")
     public String logout() {
+    	
     	memberService.logout();
     	return "success";
     }
@@ -55,12 +56,13 @@ public class MemberController {
     public String memberEmailChecking(
     		@RequestBody(required = false) EmailDTO email
     		) {
+    	
     	if(memberRepository.findOneByMemberEmail(email.getEmail()).isEmpty()) {
     		
-    		return "N";
+    		return "YES";
     	}else {
     		
-    		return "Y";
+    		return "DUP";
     	}
     }
 }

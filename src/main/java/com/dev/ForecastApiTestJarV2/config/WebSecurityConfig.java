@@ -34,13 +34,13 @@ public class WebSecurityConfig {
     		"/api/member/signup", 
     		"/api/member/signin",
     		"/api/member/register",
-    		"/api/quest/**"
+    		"/api/quest/**",
     		};
     private final String[] notAllowedUrls = {
     		"/api/member/test", 
     		};
-    private final String[] daoUrls = {
-    		"/api/dao"
+    private final String[] userUrls = {
+    		"/api/dao/**"
     		};
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,7 +55,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers(allowedUrls).permitAll()
-                .antMatchers(daoUrls).hasAnyRole("ADMIN", "USER")
+                .antMatchers(userUrls).hasAnyRole("ADMIN", "USER")
                 .antMatchers(notAllowedUrls).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()

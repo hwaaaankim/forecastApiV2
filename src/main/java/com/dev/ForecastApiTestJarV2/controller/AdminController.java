@@ -83,15 +83,15 @@ public class AdminController {
 	
 	@PostMapping("/questHashTagRegistration")
 	public @ResponseBody Object questHashTagRegistration(
-			@RequestBody Map<String, ArrayList<String>> hashTags,
-			QuestHashTag hashTag
+			@RequestBody Map<String, ArrayList<String>> hashTags
+			
 			) {
 		List<String> tags = hashTags.get("hashTags");
 		List<String> dupList = new ArrayList<String>();
 		Map<String, Object> result = new HashMap<>();
 		
 		for(String tag : tags) {
-			
+		QuestHashTag hashTag = new QuestHashTag();
 			try {
 				hashTag.setHashtagName(tag);
 				questHashTagRepository.save(hashTag);

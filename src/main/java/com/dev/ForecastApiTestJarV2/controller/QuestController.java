@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,7 +41,7 @@ public class QuestController {
 			// UPLOAD : Start date 와 End date 사이에 Upload된 Quest 조회 
 			// ACTION : 아직 게시여부가 정해지지 않은 - DAO - Quest들을 End Date가 가까운 순으로 조회
 			// VOTING : Voting중인 Quest들을 End Date가 가까운 순으로 조회
-			// POINT : Voting 진행중인 Quest중 - SUCCESS - Voting에 걸린 Point가 높은 Quest 순으로 조회
+			// AMOUNT : Voting 진행중인 Quest중 - SUCCESS - Voting에 걸린 Point가 높은 Quest 순으로 조회
 			@RequestParam(required = false) String searchWord,
 			@RequestParam(required = false) Long hashTagId, 
 			@RequestParam(required = false) String startDate, 
@@ -65,8 +66,8 @@ public class QuestController {
 			quests = questRepository.findAllByQuestStatusOrderByQuestActionEndDesc(pageable,"DAO");
 		}else if(searchType.equals("VOTING")) {
 			quests = questRepository.findAllByQuestStatusOrderByQuestActionEndDesc(pageable,"SUCCESS");
-		}else if(searchType.equals("POINT")) {
-			quests = questRepository.findAllByQuestStatusOrderByQuestPointDesc(pageable,"SUCCESS");
+		}else if(searchType.equals("AMOUNT")) {
+			quests = questRepository.findAllByQuestStatusOrderByQuestVotingTokenAmountDesc(pageable,"SUCCESS");
 		}else {
 			quests = questRepository.findAll(pageable);
 		}
@@ -83,6 +84,13 @@ public class QuestController {
 		return quest;
 	}
 	
+	@GetMapping( value = "/questSelectDetail/{id}")
+	public @ResponseBody Object questRegistration(
+			@PathVariable Long id
+			) {
+		
+		return questRepository.findById(id).get();
+	}
 }
 
 

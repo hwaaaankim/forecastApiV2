@@ -50,7 +50,8 @@ public class MemberService {
 			) {
 		System.out.println("login");
 		MemberAccessLog accessLog = new MemberAccessLog();
-		if (memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).orElse(null) != null) {
+		if (memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).orElse(null) != null
+				&& memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().isMemberSign()) {
 			UsernamePasswordAuthenticationToken authenticationToken = 
 					new UsernamePasswordAuthenticationToken(memberLoginRequestDTO.getWalletAddress(), memberLoginRequestDTO.getWalletId());
 			Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -67,18 +68,44 @@ public class MemberService {
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 			
-//			MemberJWTRedis redis = new MemberJWTRedis();
-//			redis.setDate(new Date());
-//			redis.setAccessJwt(jwt.getAccessToken());
-//			redis.setRefreshJwt(jwt.getRefreshToken());
-//			redis.setWalletAddress(authentication.getName());
-//			redisRepository.save(redis);
 			redisTemplate.opsForValue().set(authentication.getName(), jwt.getAccessToken());
-//			System.out.println(redisTemplate.opsForValue().get(authentication.getName()));
 			return new ResponseEntity<Object>(jwt, HttpStatus.valueOf(200));
-		}else {
+		}else if(memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).orElse(null) != null &&
+				!memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().isMemberSign() ){
 			
-			return new ResponseEntity<Object>("Input your Email", HttpStatus.valueOf(200));
+			return new ResponseEntity<Object>("INPUTEMAIL", HttpStatus.valueOf(200));
+		}else {
+			System.out.println("register");
+			Member member = Member.builder()
+					.memberWalletAddress(memberLoginRequestDTO.getWalletAddress())
+					.memberWalletId(passwordEncoder.encode(memberLoginRequestDTO.getWalletId()))
+					.memberRole("ROLE_USER")
+	                .memberJoinDate(new Date())
+	                .memberEmail(memberLoginRequestDTO.getEmail())
+	                .memberNickname(memberLoginRequestDTO.getEmail())
+					.memberActivated(true)
+					.memberSign(false).build();
+			memberRepository.save(member);
+			
+			UsernamePasswordAuthenticationToken authenticationToken = 
+					new UsernamePasswordAuthenticationToken(memberLoginRequestDTO.getWalletAddress(), memberLoginRequestDTO.getWalletId());
+
+			Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			TokenInfo jwt = jwtTokenProvider.generateToken(authentication, "NEW USER");
+			log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), request.getRequestURI());
+			accessLog.setAccessLogIp(request.getRemoteAddr());
+			accessLog.setAccessLogAccessJwt(jwt.getAccessToken());
+			accessLog.setAccessLogRefreshJwt(jwt.getRefreshToken());
+			accessLog.setAccessLogMemberId(memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().getMemberId());
+			accessLog.setAccessLogText("NEW USER");
+			memberAccessLogService.saveAccessLog(accessLog);
+			
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+			
+			redisTemplate.opsForValue().set(authentication.getName(), jwt.getAccessToken());
+			return new ResponseEntity<Object>("INPUTEMAIL", HttpStatus.valueOf(200));
 		}
 	}
 
@@ -86,11 +113,9 @@ public class MemberService {
 	public void logout() {
         //Token에서 로그인한 사용자 정보 get해 로그아웃 처리
 		Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
-//		 System.out.println("logout" + redisTemplate.opsForValue().get(authentication.getName()));
         if (redisTemplate.opsForValue().get(authentication.getName()) != null) {
             redisTemplate.delete(authentication.getName()); //Token 삭제
         }
-//        System.out.println("logout" + redisTemplate.opsForValue().get(authentication.getName()));
 	}
 	
 	@Transactional
@@ -98,47 +123,43 @@ public class MemberService {
 			MemberLoginRequestDTO memberLoginRequestDTO,
 			HttpServletRequest request
 			) {
-		System.out.println("register");
-		MemberAccessLog accessLog = new MemberAccessLog();
-		Member member = Member.builder()
-				.memberWalletAddress(memberLoginRequestDTO.getWalletAddress())
-				.memberWalletId(passwordEncoder.encode(memberLoginRequestDTO.getWalletId()))
-				.memberRole("ROLE_USER")
-                .memberJoinDate(new Date())
-                .memberEmail(memberLoginRequestDTO.getEmail())
-                .memberNickname(memberLoginRequestDTO.getEmail())
-				.memberActivated(true)
-				.memberSign(true).build();
-		System.out.println(member.toString());
-		memberRepository.save(member);
-		
-		UsernamePasswordAuthenticationToken authenticationToken = 
-				new UsernamePasswordAuthenticationToken(memberLoginRequestDTO.getWalletAddress(), memberLoginRequestDTO.getWalletId());
+		System.out.println("email register");
+		if(memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).orElse(null) != null &&
+				!memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().isMemberSign() ){
+			MemberAccessLog accessLog = new MemberAccessLog();
+			memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).ifPresent(
+					m->{
+						m.setMemberEmail(memberLoginRequestDTO.getEmail());
+						m.setMemberNickname(memberLoginRequestDTO.getEmail());
+						m.setMemberSign(true);
+						memberRepository.save(m);
+					}
+				);
+			
+			UsernamePasswordAuthenticationToken authenticationToken = 
+					new UsernamePasswordAuthenticationToken(memberLoginRequestDTO.getWalletAddress(), memberLoginRequestDTO.getWalletId());
 
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		TokenInfo jwt = jwtTokenProvider.generateToken(authentication, "NEW USER");
-		log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), request.getRequestURI());
-		accessLog.setAccessLogIp(request.getRemoteAddr());
-		accessLog.setAccessLogAccessJwt(jwt.getAccessToken());
-		accessLog.setAccessLogRefreshJwt(jwt.getRefreshToken());
-		accessLog.setAccessLogMemberId(memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().getMemberId());
-		accessLog.setAccessLogText("NEW USER");
-		memberAccessLogService.saveAccessLog(accessLog);
-		System.out.println(accessLog.toString());
+			Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			TokenInfo jwt = jwtTokenProvider.generateToken(authentication, "NEW USER");
+			log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), request.getRequestURI());
+			accessLog.setAccessLogIp(request.getRemoteAddr());
+			accessLog.setAccessLogAccessJwt(jwt.getAccessToken());
+			accessLog.setAccessLogRefreshJwt(jwt.getRefreshToken());
+			accessLog.setAccessLogMemberId(memberRepository.findOneByMemberWalletAddress(memberLoginRequestDTO.getWalletAddress()).get().getMemberId());
+			accessLog.setAccessLogText("NEW USER - EMAIL REGISTRATION");
+			memberAccessLogService.saveAccessLog(accessLog);
+			
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+			
+			redisTemplate.opsForValue().set(authentication.getName(), jwt.getAccessToken());
+			return new ResponseEntity<Object>(jwt, HttpStatus.valueOf(200));
+		}else {
+			
+			return new ResponseEntity<Object>("DO IT THE RIGHT WAY.", HttpStatus.valueOf(200));
+		}
 		
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-		
-//		MemberJWTRedis redis = new MemberJWTRedis();
-//		redis.setDate(new Date());
-//		redis.setAccessJwt(jwt.getAccessToken());
-//		redis.setRefreshJwt(jwt.getRefreshToken());
-//		redis.setWalletAddress((String)authentication.getPrincipal());
-//		redisRepository.save(redis);
-		redisTemplate.opsForValue().set(authentication.getName(), jwt.getAccessToken());
-		System.out.println(redisTemplate.opsForValue().get(authentication.getName()));
-		return new ResponseEntity<Object>(jwt, HttpStatus.valueOf(200));
 	}
 	
 	// 유저,권한 정보를 가져오는 메서드

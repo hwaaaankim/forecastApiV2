@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,24 @@ public class QuestService {
 
 	@Autowired
 	private QuestRepository questRepository;
+	
+	public void questAction(HashMap<String, Object> result, String walletAddress) {
+		
+		int id = (int) result.get("ID");
+		Long questId = Long.valueOf(id);
+		Boolean code =  (Boolean) result.get("CODE");
+		if(code) {
+			questRepository.findById(questId).ifPresent(q->{
+				q.setQuestPoint(q.getQuestPoint()+1);
+				questRepository.save(q);
+			});
+		}else {
+			questRepository.findById(questId).ifPresent(q->{
+				q.setQuestPoint(q.getQuestPoint()-1);
+				questRepository.save(q);
+			});
+		}
+	}
 	
 	public Quest questRegistration(QuestDTO dto, String path, QuestHashTag tag) {
 		
