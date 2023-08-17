@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import org.springframework.lang.Nullable;
 
+import com.dev.ForecastApiTestJarV2.model.member.Member;
 import com.dev.ForecastApiTestJarV2.model.member.MemberActionLog;
 import com.dev.ForecastApiTestJarV2.model.member.MemberVotingLog;
 
@@ -94,6 +95,12 @@ public class Quest {
 			name="QUEST_HASHTAG_REFER_ID", referencedColumnName="HASHTAG_ID"
 			)
 	private QuestHashTag questHashTag;
+	
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = false)
+	@JoinColumn(
+			name="QUEST_VOTING_MEMBER_ID", referencedColumnName="MEMBER_ID"
+			)
+	private Member member;
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@JoinColumn(

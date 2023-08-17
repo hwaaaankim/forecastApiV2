@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.dev.ForecastApiTestJarV2.dto.QuestDTO;
 import com.dev.ForecastApiTestJarV2.model.quest.Quest;
 import com.dev.ForecastApiTestJarV2.model.quest.QuestHashTag;
+import com.dev.ForecastApiTestJarV2.repository.member.MemberRepository;
 import com.dev.ForecastApiTestJarV2.repository.quest.QuestRepository;
 
 @Service
@@ -21,6 +22,9 @@ public class QuestService {
 
 	@Autowired
 	private QuestRepository questRepository;
+	
+	@Autowired
+	private MemberRepository memberRepository;
 	
 	
 	public void questVoting(HashMap<String, Object> result, String walletAddress) {
@@ -53,7 +57,7 @@ public class QuestService {
 		}
 	}
 	
-	public Quest questRegistration(QuestDTO dto, String path, QuestHashTag tag) {
+	public Quest questRegistration(String walletAddress, QuestDTO dto, String path, QuestHashTag tag) {
 		
 		Quest quest = new Quest();
 		quest.setQuestTitle(dto.getQuestTitle());
@@ -73,6 +77,7 @@ public class QuestService {
 		quest.setQuestStatus("DAO");
 		quest.setQuestHashTag(tag);
 		quest.setQuestAnswer(null);
+		quest.setMember(memberRepository.findOneByMemberWalletAddress(walletAddress).get());
 		
 		return questRepository.save(quest);
 	}

@@ -8,12 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dev.ForecastApiTestJarV2.constant.JwtTokenProvider;
 import com.dev.ForecastApiTestJarV2.dto.QuestDTO;
 import com.dev.ForecastApiTestJarV2.model.member.Member;
 import com.dev.ForecastApiTestJarV2.model.quest.Quest;
@@ -54,7 +59,10 @@ public class AdminController {
 	private final QuestHashTagRepository questHashTagRepository;
 	private final QuestImagesService questImagesService;
 	private final QuestAnswerService questAnswerService;
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 	
 	@GetMapping("/selectMemberAll")
 	public @ResponseBody Object selectMemberDetail(
@@ -86,6 +94,7 @@ public class AdminController {
 			@RequestBody Map<String, ArrayList<String>> hashTags
 			
 			) {
+		
 		List<String> tags = hashTags.get("hashTags");
 		List<String> dupList = new ArrayList<String>();
 		Map<String, Object> result = new HashMap<>();
@@ -113,9 +122,15 @@ public class AdminController {
 			)
 	public @ResponseBody Object questRegistration(
 			@RequestPart QuestDTO quest,
-			@RequestParam List<MultipartFile> files
+			@RequestParam List<MultipartFile> files,
+			HttpServletRequest request
 			) throws IOException, IllegalArgumentException, FileNotFoundException, java.io.IOException {
-		
+		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+		String token = "";
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			token = bearerToken.split(" ")[1].trim();
+		}
+		String walletAddress = jwtTokenProvider.getAuthentication(token).getName();
 		Date day = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		String dirName = "uploadFile/" + format.format(day);
@@ -127,7 +142,7 @@ public class AdminController {
 			}
 		}
 		
-		Quest q = questService.questRegistration(quest, 
+		Quest q = questService.questRegistration(walletAddress, quest, 
 				filePath.get(0), questHashTagRepository.findById(quest.getQuestHashTag()).get());
 		questImagesService.questImagesRegistration(filePath, q);
 		questAnswerService.questAnswerRegistration(q, quest.getQuestAnswer());

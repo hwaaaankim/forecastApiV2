@@ -28,7 +28,6 @@ public class DaoController {
 	private final QuestService questService;
 	private final MemberActionLogService memberActionLogService;
 	private final MemberVotingLogService memberVotingLogService;
-
 	public static final String AUTHORIZATION_HEADER = "Authorization";
 	
 	@Autowired
